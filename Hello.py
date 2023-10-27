@@ -1,5 +1,6 @@
 import random
 import time
+from datetime import date
 import pandas as pd
 import streamlit as st
 from utils import generate_sha256_hash, check_hash_in_sample
@@ -23,7 +24,7 @@ def run():
 
     # Input fields
     name = st.text_input("Name", "Max Mustermann")
-    birthday = st.date_input("Birthday")
+    birthday = st.date_input("Birthday", min_value=date(1900, 1, 1), max_value=date.today(), format="DD/MM/YYYY")
     id_number = st.text_input("Case number", "ABC123456")
 
     col1, col2, col3 = st.columns(3)

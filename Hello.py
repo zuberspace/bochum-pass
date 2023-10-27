@@ -24,7 +24,7 @@ def run():
     # Input fields
     name = st.text_input("Name", "Max Mustermann")
     birthday = st.date_input("Birthday")
-    id_number = st.text_input("Case number"), "ABC123456"
+    id_number = st.text_input("Case number", "ABC123456")
 
     col1, col2, col3 = st.columns(3)
     if col1.button("Submit User Input"):

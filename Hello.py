@@ -1,50 +1,54 @@
-# Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022)
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-
+import random
+import time
+import pandas as pd
 import streamlit as st
-from streamlit.logger import get_logger
+from utils import generate_sha256_hash, check_hash_in_sample
 
-LOGGER = get_logger(__name__)
+csv_file = "hashes.csv"
+df = pd.read_csv(csv_file, header=None, names=['Hash'])
+hash_list = df['Hash'].tolist()
 
 
 def run():
     st.set_page_config(
-        page_title="Hello",
-        page_icon="👋",
+        page_title="Bochum Pass Proof of Concept",
+        page_icon="",
     )
 
-    st.write("# Welcome to Streamlit! 👋")
+    def update_input(input):
+        st.session_state.input = input
 
-    st.sidebar.success("Select a demo above.")
+    st.title("Bochum Pass")
+    st.caption("Proof of Concept")
 
-    st.markdown(
-        """
-        Streamlit is an open-source app framework built specifically for
-        Machine Learning and Data Science projects.
-        **👈 Select a demo from the sidebar** to see some examples
-        of what Streamlit can do!
-        ### Want to learn more?
-        - Check out [streamlit.io](https://streamlit.io)
-        - Jump into our [documentation](https://docs.streamlit.io)
-        - Ask a question in our [community
-          forums](https://discuss.streamlit.io)
-        ### See more complex demos
-        - Use a neural net to [analyze the Udacity Self-driving Car Image
-          Dataset](https://github.com/streamlit/demo-self-driving)
-        - Explore a [New York City rideshare dataset](https://github.com/streamlit/demo-uber-nyc-pickups)
-    """
-    )
+    # Input fields
+    name = st.text_input("Name", "Max Mustermann")
+    birthday = st.date_input("Birthday")
+    id_number = st.text_input("Case number"), "ABC123456"
+
+    col1, col2, col3 = st.columns(3)
+    if col1.button("Submit User Input"):
+        sha256_hash = generate_sha256_hash(name, birthday, id_number)
+        update_input(sha256_hash)
+
+    if col2.button("Select Random Hash"):
+        random_hash = random.choice(hash_list)
+        update_input(random_hash)
+
+    user_input = st.text_input("Enter a SHA-256 hash:", key='input',)
+
+    if st.button("Check Hash"):
+        start_time = time.time()
+        if check_hash_in_sample(user_input, hash_list):
+            st.success("The hash exists in the list.")
+        else:
+            st.error("The hash does not exist in the list.")
+        end_time = time.time()
+        elapsed_time = end_time - start_time
+        st.write(f"Elapsed time for the lookup: {elapsed_time:.4f} seconds")
+
+    with st.expander("Hash list"):
+        st.write(df['Hash'])
 
 
 if __name__ == "__main__":

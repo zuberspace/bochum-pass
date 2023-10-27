@@ -1,1 +1,2 @@
-# Bochum Pass Proof of Concept
+# Bochum Pass
+Proof of Concept

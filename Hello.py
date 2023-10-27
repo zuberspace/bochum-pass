@@ -19,17 +19,30 @@ def run():
     def update_input(input):
         st.session_state.input = input
 
+    def update_user(name, birthday, case_number):
+        st.session_state.name = name
+        st.session_state.birthday = birthday
+        st.session_state.case_number = case_number
+
     st.title("Bochum Pass")
     st.caption("Proof of Concept")
 
+    col1_user, col2_user, col3_user = st.columns(3)
+    if col1_user.button(":red[Max]"):
+        update_user("Max Mustermann", date(1988, 2, 13), "ABC123456")
+
+    if col2_user.button(":green[Maike]"):
+        update_user("Maike Musterfrau", date(1964, 5, 26), "123456ABC")
+
+
     # Input fields
-    name = st.text_input("Name", "Max Mustermann")
-    birthday = st.date_input("Birthday", min_value=date(1900, 1, 1), max_value=date.today(), format="DD/MM/YYYY")
-    id_number = st.text_input("Case number", "ABC123456")
+    name = st.text_input("Name", key='name')
+    birthday = st.date_input("Birthday", min_value=date(1900, 1, 1), max_value=date.today(), format="DD/MM/YYYY", key='birthday')
+    case_number = st.text_input("Case number", key='case_number')
 
     col1, col2, col3 = st.columns(3)
     if col1.button("Submit User Input"):
-        sha256_hash = generate_sha256_hash(name, birthday, id_number)
+        sha256_hash = generate_sha256_hash(name, birthday, case_number)
         update_input(sha256_hash)
 
     if col2.button("Select Random Hash"):
